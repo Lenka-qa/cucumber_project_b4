@@ -36,7 +36,7 @@ public class LoginStepDefs {
     }
     @Then("user should be able to see the home for client")
     public void user_should_be_able_to_see_the_home_for_client() {
-       assertTrue("Intensionally failing",false);
+       assertTrue("Intentionally failing",false);
     }
 
 
