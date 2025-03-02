@@ -73,7 +73,4 @@ public class ProductSteps {
         System.out.println("group = " + group1);
 
     }
-
-
-
 }
