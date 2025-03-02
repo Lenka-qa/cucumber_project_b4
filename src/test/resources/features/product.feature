@@ -1,6 +1,6 @@
 Feature: product data table practice
 
-  @listOfMap
+  @listOfMap @smoke
   Scenario: verify each product price
     # practice List<Map<String, String>>
     Given User is on the HomePage
@@ -31,7 +31,7 @@ Feature: product data table practice
 #      | Monitors | Apple monitor 24  | 400           |
 #      | Monitors | ASUS Full HD      | 230           |
 
-  @listOfList
+  @listOfList @smoke
 # practice List<List<String>>
   Scenario: verify each product price ListOfList
     Given User is on the HomePage
@@ -54,7 +54,7 @@ Feature: product data table practice
 #  List Element 7 (List<String>): [Monitors, Apple monitor 24, 400]
 #  List Element 8 (List<String>): [Monitors, ASUS Full HD, 230]
 
-  @mapList
+  @mapList @smoke
 # practice Map<String, List<String>>
   Scenario: VERIFY STUDENTS NAMES ON DISCORD
   Then user should see the following names in their group

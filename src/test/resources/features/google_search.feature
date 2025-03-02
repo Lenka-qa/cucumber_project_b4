@@ -6,7 +6,7 @@ Feature: Google search Functionality Title Verification
     Given user in on Google search page
     When user types Loop Academy in the google search box nd clicks enter
     Then user should see Loop Academy  - Google search ib the Google title
-  @google_search
+  @google_search @smoke
   Scenario: Search functionality result title verification
     Given user in on Google search page
     When user types "Loop Academy" in the google search box and clicks enter
