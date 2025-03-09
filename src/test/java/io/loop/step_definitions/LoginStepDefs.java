@@ -3,6 +3,7 @@ package io.loop.step_definitions;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.loop.pages.HomePage;
 import io.loop.pages.LoginPage;
 import io.loop.utilities.BrowserUtils;
 import io.loop.utilities.ConfigurationReader;
@@ -11,7 +12,6 @@ import io.loop.utilities.Driver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.*;
 import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class LoginStepDefs {
 
     LoginPage loginPage = new LoginPage();
+    HomePage homePage = new HomePage();
     private static final Logger LOG = LogManager.getLogger();
 
     @Given("user is on Docuport login page")
@@ -53,8 +54,10 @@ public class LoginStepDefs {
 
     @Then("user should be able to see the home for client")
     public void user_should_be_able_to_see_the_home_for_client() {
-        BrowserUtils.takeScreenshot();
-        assertTrue(loginPage.continueButton.isDisplayed());
+        //BrowserUtils.takeScreenshot();
+        assertTrue(BrowserUtils.waitForVisibility(homePage.receivedDocs, 10). isDisplayed());
+        LOG.info("Home page is successfully loaded");
+        //assertTrue(loginPage.continueButton.isDisplayed());
     }
 
     @When("user enters username for employee")
