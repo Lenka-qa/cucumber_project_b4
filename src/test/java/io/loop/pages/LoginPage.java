@@ -47,9 +47,14 @@ public class LoginPage {
                 BrowserUtils.waitForClickable(loginButton, 10).click();
                 break;
             //default: throw new IllegalArgumentException("No such button: " + button);
-
             case "continue":
-                BrowserUtils.waitForClickable(continueButton, 10).click();
+                try {
+                    BrowserUtils.waitForClickable(continueButton, 10).click();
+
+                } catch (Exception e) {
+                    WebElement element = Driver.getDriver().findElement(By.xpath("//span[.=' Continue ']"));
+                    element.click();
+                }
                 break;
             default: throw new IllegalArgumentException("No such button: " + button);
         }
