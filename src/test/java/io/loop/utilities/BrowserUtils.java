@@ -1,13 +1,28 @@
 package io.loop.utilities;
 
+import io.cucumber.core.logging.Logger;
+import io.cucumber.core.logging.LoggerFactory;
 import io.cucumber.java.Scenario;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+
+import static io.loop.step_definitions.LoginStepDefs.LOG;
 import static java.time.Duration.ofSeconds;
 import static org.junit.Assert.assertTrue;
 
@@ -81,7 +96,7 @@ public class BrowserUtils {
     public static void loopLinkClick(String nameOfPage){
         WebElement element = Driver.getDriver().findElement(By.xpath("//a[.='"+nameOfPage+"']"));
 
-        WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(Integer.valueOf(ConfigurationReader.getProperties("timeouts"))));
         wait.until(ExpectedConditions.elementToBeClickable(element)).click();
     }
 
@@ -118,4 +133,161 @@ public class BrowserUtils {
         WebDriverWait wait = new WebDriverWait(Driver.getDriver(), ofSeconds(timeToWaitSec));
         return wait.until(ExpectedConditions.visibilityOf(element));
     }
+    public static void uploadFile(String filePath) throws AWTException{
+        //COPY THE FILE PATH THIS IS FOR WINDOWS
+        StringSelection selection = new StringSelection(filePath);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+        // simulate keyboard fpr past and enter
+        Robot robot = new Robot();
+        robot.delay(1000);
+        //press CTRL + v
+        robot.keyPress(KeyEvent.VK_CONTROL);
+        robot.keyPress(KeyEvent.VK_V);
+        robot.keyRelease(KeyEvent.VK_V);
+        robot.keyRelease(KeyEvent.VK_CONTROL);
+
+        //press ENTER
+        robot.keyPress(KeyEvent.VK_ENTER);
+        robot.keyRelease(KeyEvent.VK_ENTER);
+
+    }
+    /**
+     * Moves the mouse to given element
+     * @param element on which to hover
+     * @author nadir
+     */
+    public static void hover(WebElement element){
+        Actions actions = new Actions(Driver.getDriver());
+        actions.moveToElement(element);
+    }
+    /**
+     * Scrolls down to an element using JavaScript
+     * @param element
+     * @author nadir
+     */
+    public static void scrollToElement(WebElement element){
+        ((JavascriptExecutor) Driver.getDriver()).executeScript("arguments[0].scrollIntoView(true)", element);
+    }
+    /**
+     * Clicks on an element using JavaScript
+     * @param element
+     * @author nadir
+     */
+    public static void clickWithJS(WebElement element){
+        ((JavascriptExecutor) Driver.getDriver()).executeScript("arguments[0].scrollIntoView(true)", element);
+        ((JavascriptExecutor) Driver.getDriver()).executeScript("arguments[0].click();", element);
+    }
+    /**
+     * Performs double click action on an element
+     * @param element
+     * @author nadir
+     */
+    public static void doubleClick(WebElement element){
+        new Actions(Driver.getDriver()).doubleClick(element).perform();
+    }
+
+    /**
+     * performs a pause
+     * @param seconds
+     * @author nadir
+     */
+    public static void justWait(int milliSeconds){
+        try{
+            Thread.sleep(milliSeconds);
+        } catch (InterruptedException i){
+            i.printStackTrace();
+        }
+    }
+    public static List<String> getElementsText(List<WebElement> elements){
+        List<String> elementsText = new ArrayList<>();
+        for (WebElement element : elements) {
+            elementsText.add(element.getText());
+        }
+        return elementsText;
+    }
+
+    public static List<String> getElementsTextWithStream(List<WebElement> elements){
+        return elements.stream()
+                .map(x->x.getText())
+                .collect(Collectors.toList());
+    }
+    public static List<String> getElementsTextWithStream2(List<WebElement> elements){
+        return elements.stream()
+                .map(WebElement::getText)
+                .collect(Collectors.toList());
+    }
+    public static void waitForPageLoad(long timeOutInSeconds){
+        ExpectedCondition<Boolean> expectedConditions = new ExpectedCondition<Boolean>(){
+            public Boolean apply (WebDriver driver){
+                return ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete");
+            }
+        };
+        try {
+            LOG.info("Waiting for page load");
+            WebDriverWait wait = new WebDriverWait(Driver.getDriver(), ofSeconds(timeOutInSeconds));
+            wait.until(expectedConditions);
+        }catch (Throwable error){
+            LOG.error("Timeout waiting for the Page Load Request completed after: " + timeOutInSeconds + " seconds");
+        }
+    }
+    public static void waitForStaleElement(WebElement element) {
+        int y = 0;
+
+        while (y <= 15) {
+            try {
+                element.isDisplayed();
+                break;
+            } catch (StaleElementReferenceException st) {
+                y++;
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException i) {
+                    i.printStackTrace();
+                }
+            } catch (WebDriverException we) {
+                y++;
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException i) {
+                    i.printStackTrace();
+                }
+            }
+        }
+    }
+    public static void waitUntilPageLoad(){
+        WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(10));
+        wait.until((WebDriver d) ->{
+            Boolean isPageLoaded = (Boolean) ((JavascriptExecutor) Driver.getDriver())
+                    .executeScript("return document.readyState").equals("complete");
+            if(!isPageLoaded)
+                LOG.info("Document is loading");
+            return isPageLoaded;
+        });
+    }
+
+    public static void createFileWithContent(String filePath, String content){
+        File file = new File(filePath);
+
+        try{
+            file.createNewFile();
+            FileWriter fw = new FileWriter(file);
+            try{
+                fw.write(content);
+            } catch (Exception e) {
+                LOG.error("Error during FileWriter append. " + e.getMessage(), e.getCause());
+            } finally {
+                try{
+                    fw.close();
+                } catch (Exception e){
+                    LOG.error("Error during FileWriter close. " + e.getMessage(), e.getCause());
+                }
+            }
+        } catch (IOException e){
+            LOG.error(e.getMessage(), e.getCause());
+        }
+
+    }
+
+
+
 }

@@ -20,7 +20,7 @@ public class LoginStepDefs {
 
     LoginPage loginPage = new LoginPage();
     HomePage homePage = new HomePage();
-    private static final Logger LOG = LogManager.getLogger();
+    public static final Logger LOG = LogManager.getLogger();
 
     @Given("user is on Docuport login page")
     public void user_is_on_docuport_login_page() {

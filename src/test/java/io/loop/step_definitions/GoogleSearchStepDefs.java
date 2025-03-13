@@ -64,7 +64,7 @@ public class GoogleSearchStepDefs {
 
     @Then("user should see {string} in the google title")
     public void user_should_see_in_the_google_title(String expectedTitle) {
-        WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(Integer.valueOf(ConfigurationReader.getProperties("timeouts"))));
         wait.until(ExpectedConditions.titleIs(expectedTitle));
         String actualTitle = Driver.getDriver().getTitle();
         assertEquals("Expected result does not match the actual", expectedTitle, actualTitle);
@@ -76,7 +76,7 @@ public class GoogleSearchStepDefs {
 //            googleSearchPage.searchBox.clear();
 //            googleSearchPage.searchBox.sendKeys(item + Keys.ENTER);
 //            googleSearchPage.handleReCaptcha(Driver.getDriver(), googleSearchPage.captcha);
-//            WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(10));
+//            WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(Integer.valueOf(ConfigurationReader.getProperties("timeouts"))));
 //            wait.until(ExpectedConditions.titleIs(item + " - Google Search"));
 //            assertEquals("Expected result does not match actual", item + " - Google Search", Driver.getDriver().getTitle());
 //        }
@@ -84,7 +84,7 @@ public class GoogleSearchStepDefs {
             googleSearchPage.searchBox.clear();
             googleSearchPage.searchBox.sendKeys( p + Keys.ENTER);
             googleSearchPage.handleCaptcha(Driver.getDriver(), googleSearchPage.captcha);
-            WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(10));
+            WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(Integer.valueOf(ConfigurationReader.getProperties("timeouts"))));
             wait.until(ExpectedConditions.titleIs(p + " - Google Search"));
             assertEquals("Expected result does not match actual", p + " - Google Search", Driver.getDriver().getTitle());
         });
